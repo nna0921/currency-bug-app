@@ -1,5 +1,6 @@
 # Currency Converter — Real-World Failure Simulation 
-# Softawre Bug (Option B)
+
+## Software Bug (Option B)
 
 This project is a **web application** that simulates a **software bug/glitch (Option B)** inside a simple currency conversion tool. It is built using **plain HTML, CSS, and JavaScript**, with no backend required.
 
