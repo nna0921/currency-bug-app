@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USD to EUR Converter (Failure Simulation)</title>
+    <style>
+        :root {
+            --p: #007bff;
+            --pd: #0056b3;
+            --s: #28a745;
+            --td: #333;
+            --tl: #555;
+            --bg: #f8f9fa;
+            --bp: #ecf0f1;
+            --bl: #ced4da;
+            --ebg: #ffebee;
+            --et: #d32f2f;
+            --lbg: #212121;
+            --lt: #a5d6a7;
+            --sm: 0 6px 16px rgba(0, 0, 0, 0.12);
+            --br: 8px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--td);
+        }
+
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: var(--br);
+            box-shadow: var(--sm);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        #showLogsButton { 
+            background: none;
+            border: none;
+            color: var(--tl);
+            text-decoration: underline;
+            padding: 0;
+            margin-top: 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: color 0.2s;
+            display: none;
+            float: right;
+            clear: right;
+        }
+
+        #showLogsButton:hover { 
+            color: var(--pd);
+        }
+        
+        #showLogsButton:disabled {
+            cursor: not-allowed;
+            color: #cccccc;
+            text-decoration: none;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--p);
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 1.8em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--td);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 25px;
+            border: 1px solid var(--bl);
+            border-radius: var(--br);
+            font-size: 1.1em;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--p);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        .toggle-container {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: var(--ebg);
+            border: 1px solid #ffab91;
+            border-radius: var(--br);
+            display: flex;
+            align-items: center;
+            font-size: 0.95em;
+            color: var(--et);
+        }
+
+        .toggle-container input[type="checkbox"] {
+            margin-right: 12px;
+            min-width: 20px;
+            min-height: 20px;
+            accent-color: var(--et);
+            cursor: pointer;
+        }
+
+        button.convert-button {
+            width: 100%;
+            padding: 14px 20px;
+            background-color: var(--p);
+            color: white;
+            border: none;
+            border-radius: var(--br);
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-top: 15px;
+        }
+
+        button.convert-button:hover {
+            background-color: var(--pd);
+            transform: translateY(-1px);
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--br);
+            text-align: center;
+            background-color: var(--bp);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        #eurResult {
+            font-size: 2.2em;
+            color: var(--s);
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .error-banner {
+            display: none;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: var(--ebg);
+            color: var(--et);
+            border: 1px solid var(--et);
+            border-radius: var(--br);
+            font-weight: 600;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        #logPanelContainer {
+            margin-top: 35px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+
+        #logPanel {
+            display: none;
+            background-color: var(--lbg);
+            color: var(--lt);
+            padding: 15px;
+            border-radius: var(--br);
+            font-family: 'Consolas', 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 300px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #logPanel h3 {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <h2>💰 Currency Converter</h2>
+    
+    <div id="errorBanner" class="error-banner">
+        🚨 **Calculation Anomaly Detected (BUG: Wrong Formula)**
+    </div>
+
+    <div class="toggle-container">
+        <input type="checkbox" id="failureToggle">
+        <label for="failureToggle">⚠️ Inject Software Bug</label>
+    </div>
+
+    <label for="usdInput">Amount in USD ($):</label>
+    <input type="number" id="usdInput" value="100.00" min="0" step="0.01">
+
+    <button class="convert-button" onclick="convertCurrency()">Convert to EUR</button>
+    
+    <button id="showLogsButton" onclick="toggleLogPanel()" disabled>
+        Show Logs
+    </button>
+    <div style="clear: both;"></div> 
+
+    <div class="result-box">
+        <div class="result-text">Result in EUR (€):</div>
+        <div id="eurResult">0.00</div>
+    </div>
+    
+    <div id="logPanelContainer">
+        <pre id="logPanel">
+        </pre>
+    </div>
+</div>
+
+<script>
+    const CORRECT_RATE = 0.93; 
+    const BUGGED_RATE = 1.25;
+    let lastLogEntry = null; 
+
+    function convertCurrency() {
+        const usdInput = document.getElementById('usdInput').value;
+        const isBugged = document.getElementById('failureToggle').checked;
+        const eurResultDisplay = document.getElementById('eurResult');
+        const errorBanner = document.getElementById('errorBanner');
+        const showLogsButton = document.getElementById('showLogsButton'); 
+        const inputAmount = parseFloat(usdInput);
+
+        errorBanner.style.display = 'none';
+        eurResultDisplay.style.color = 'var(--s)';
+        
+        showLogsButton.style.display = 'none'; 
+        showLogsButton.disabled = true;        
+        document.getElementById('logPanel').style.display = 'none'; 
+
+        if (isNaN(inputAmount) || inputAmount <= 0) {
+            eurResultDisplay.textContent = 'Invalid Input';
+            eurResultDisplay.style.color = 'var(--td)';
+            return;
+        }
+
+        let calculatedResult;
+        const expectedResult = inputAmount * CORRECT_RATE;
+        const functionName = "convertUSDtoEUR";
+        
+        if (isBugged) {
+            calculatedResult = inputAmount * BUGGED_RATE;
+            
+            triggerFailure(functionName, inputAmount, calculatedResult, expectedResult);
+
+            eurResultDisplay.style.color = 'var(--et)'; 
+            errorBanner.style.display = 'block';
+            
+            showLogsButton.style.display = 'block'; 
+            showLogsButton.disabled = false;       
+            showLogsButton.textContent = 'Show Logs';
+
+        } else {
+            calculatedResult = expectedResult;
+            lastLogEntry = null;
+        }
+        
+        eurResultDisplay.textContent = calculatedResult.toFixed(2);
+    }
+
+    function triggerFailure(func, input, result, expected) {
+        const delta = Math.abs(result - expected).toFixed(2);
+        
+        const logEntry = {
+            timestamp: new Date().toISOString(),
+            function: func,
+            input: parseFloat(input.toFixed(2)),
+            result: parseFloat(result.toFixed(2)),
+            expected: parseFloat(expected.toFixed(2)),
+            delta: parseFloat(delta),
+            errorCode: "BUG_WRONG_FORMULA"
+        };
+        
+        lastLogEntry = logEntry;
+
+        console.error("--- SIMULATED FAILURE LOG (Option B) ---");
+        console.error(JSON.stringify(logEntry, null, 2));
+        console.error("---------------------------------------");
+        
+        document.getElementById('logPanel').innerHTML = `<h3>LAST FAILURE LOG</h3>${JSON.stringify(logEntry, null, 2)}`;
+    }
+
+    function toggleLogPanel() {
+        const logPanel = document.getElementById('logPanel');
+        const showLogsButton = document.getElementById('showLogsButton');
+        
+        if (logPanel.style.display === 'block') {
+            logPanel.style.display = 'none';
+            showLogsButton.textContent = 'Show Logs';
+        } else {
+            if (lastLogEntry) { 
+                logPanel.style.display = 'block';
+                showLogsButton.textContent = 'Hide Logs';
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
