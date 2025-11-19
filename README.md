@@ -4,7 +4,6 @@
 
 This project is a **web application** that simulates a **software bug/glitch (Option B)** inside a simple currency conversion tool. It is built using **plain HTML, CSS, and JavaScript**, with no backend required.
 
----
 
 ## Project Overview
 
